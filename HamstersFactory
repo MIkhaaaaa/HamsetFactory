@@ -104,7 +104,8 @@ class HamsterFactory {
     }
 
     public void showErrorMessage() {
-        System.out.println("Неверная команда, попробуйте ещё раз.");    }
+        System.out.println("Неверная команда, попробуйте ещё раз.");
+        }
 }
 
 class Hamster {
