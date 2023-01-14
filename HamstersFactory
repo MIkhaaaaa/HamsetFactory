@@ -1,0 +1,139 @@
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Scanner;
+
+class Main {
+
+    private static HamsterFactory hamsterFactory = new HamsterFactory();
+
+    public static void printInstruction() {
+        System.out.println("Добро пожаловать на фабрику хомяков!");
+        System.out.println("Здесь вы можете создавать, удалять и даже заменять одних хомяков на других");
+        System.out.println("Для работы с фабрикой используйте следующие команды:");
+        System.out.println("'Печать' - показать всех активных хомяков");
+        System.out.println("'Создать [Имя]' - создать хомяка с выбранным именем");
+        System.out.println("'Удалить [Индекс]' - удалить хомяка с по выбранному индексу");
+        System.out.println("'Очистить' - удалить всех, ранее созданных хомяков");
+        System.out.println("'Заменить [Индекс] [Имя]' - заменить хомяка под выбранным индексом на нового с выбранным именем");
+        System.out.println("'Размер' - вывести на экран текущее количество хомяков в хранилище");
+        System.out.println("'Завершить' - завершить работу программы");
+    }
+
+    public static void main(String[] args) {
+        printInstruction();
+
+        HamsterFactory hamsterFactory = new HamsterFactory();
+        hamsterFactory.start();
+    }
+}
+
+class HamsterFactory {
+
+    static final Scanner scanner = new Scanner(System.in);
+
+    ArrayList<Hamster> hamsters = new ArrayList<>(); // нам нужна структура данных, в которой можно хранить хомяков
+    int count = hamsters.size(); // мы не знаем, сколько будет хомяков: 10 или 10_000, потому нужна сущность, которая может изменять свой размер
+
+    public void start() {
+        try {
+            while (true) {
+                System.out.println("Введите команду...");
+
+                String commandName = scanner.nextLine();
+                if(commandName.equals("Завершить")) {
+                    System.out.println("Программа завершена! Спасибо за то, что пользуетесь нашей сетью хомячих фабрик");
+                    break;// перед выходом вывести "Программа завершена! Спасибо за то, что пользуетесь нашей сетью хомячих фабрик"
+                } else {
+                    Command.execute(commandName, this);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Ошибка выполнения: " + e.getMessage());
+        }
+    }
+
+    public void executePrint() {
+        if (!(hamsters.isEmpty())) {
+            System.out.println("Вывожу актуальный список хомяков в хранилище: ");
+            System.out.println(hamsters);
+        } else {
+            System.out.println("Список уже пуст");
+        }
+    }
+
+    public void executeCreate(String name) {
+        hamsters.add(new Hamster(name));
+        System.out.printf("Хомяк %s создан и добавлен в хранилище",name);
+    }
+
+    public void executeRemoveByIndex(int index) {
+        if (!(index >= hamsters.size() || index < 0)){
+            String name = hamsters.get(index).name;
+            hamsters.remove(index);
+            String message = "Хомяк %s удалён успешно";
+            System.out.println(String.format(message,name));
+
+        } else {
+            System.out.println("Хомяка по заданному индексу не существует");
+        }
+    }
+
+    public void executeClear() {
+        if (!hamsters.isEmpty()){
+            hamsters.clear();
+            System.out.println("Операция очистки завершена успешно! Все хомяки были удалены из хранилища");
+        } else {
+            System.out.println("Хранилище и так пустое");
+        }
+    }
+
+    public void executeSet(int index, String name) {
+        String message = "Хомяк %s был успешно заменён на %s";
+        if (!(index >= hamsters.size() || index < 0)) {
+            System.out.println(String.format(message, hamsters.get(index).name, name));
+            hamsters.set(index, new Hamster(name));
+        }
+    }
+
+    public void executeSize() {
+        if(!hamsters.isEmpty()) {
+            System.out.printf("Количество хомяков в хранилище равно %d",hamsters.size());
+        } else {
+            System.out.println("В хранилище нет хомяков");
+        }
+    }
+
+    public void showErrorMessage() {
+        System.out.println("Неверная команда, попробуйте ещё раз.");    }
+}
+
+class Hamster {
+
+    String name;
+
+    public Hamster(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Хомяк: " + name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Hamster)) {
+            return false;
+        }
+
+        return Objects.equals(name, ((Hamster) o).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+}
